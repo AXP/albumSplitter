@@ -57,30 +57,36 @@ if args.version:
 # Load
 print("Loading metadata...")
 try:
-    metadata = cue.CueParser(args.cue, encoding="utf-8").get_data_tracks()
+    parser = cue.CueParser.from_file(fpath=args.cue, encoding="utf-8")
+    cue_data = parser.run()
+    metadata = cue_data.meta.data
+    trackdata = cue_data.tracks
 except:
     print("not utf-8, going to try latin1")
     try:
-        metadata = cue.CueParser(args.cue, encoding="latin1").get_data_tracks()
+        parser = cue.CueParser.from_file(fpath=args.cue, encoding="latin1")
+        cue_data = parser.run()
+        metadata = cue_data.meta.data
+        trackdata = cue_data.tracks
     except:
         print("not latin1 either, you're on your own now")
         sys.exit(1)
 
 extension = os.path.splitext(args.album)[1][1:]
 
-gArtist = metadata[0]['PERFORMER']
+gArtist = metadata['PERFORMER']
 if not gArtist or not yes_or_no("Artist is: '" + gArtist + "', is it ok?"):
     gArtist = input("Enter artist manually: ")
 
-gYear = metadata[0]['DATE']
+gYear = metadata['DATE']
 if not gYear or not yes_or_no("Year is: '" + gYear + "', is it ok?"):
     gYear = input("Enter year manually: ")
 
-gAlbum = metadata[0]['ALBUM']
+gAlbum = metadata['ALBUM']
 if not gAlbum or not yes_or_no("Album is: '" + gAlbum + "', is it ok?"):
     gAlbum = input("Enter album manually: ")
 
-gGenre = metadata[0]['GENRE']
+gGenre = metadata['GENRE']
 if not gGenre or not yes_or_no("Genre is: '" + gGenre + "', is it ok?"):
     gGenre = input("Enter genre manually: ")
 
@@ -100,10 +106,10 @@ print("Loading media file...")
 toSplit = aud.from_file(args.album, extension)
 
 print("Exporting songs...")
-for song in metadata:
-    startTime = song['POS_START_SAMPLES'] // (44100 / 1000.) # Don't use actual sample rate of file because deflacue can't know it and uses 44100 to output samples
+for song in trackdata:
+    startTime = song.start // (44100 / 1000.) # Don't use actual sample rate of file because deflacue can't know it and uses 44100 to output samples
     try:
-        endTime = song['POS_END_SAMPLES'] // (44100 / 1000.)
+        endTime = song.end // (44100 / 1000.)
     except TypeError:
         endTime = None
 
@@ -111,8 +117,8 @@ for song in metadata:
     year = gYear
     album = gAlbum
     genre = gGenre
-    track = '%02d' % song['TRACK_NUM']
-    title = song['TITLE'].encode('utf-8')
+    track = '%02d' % song.num
+    title = song.title.encode('utf-8')
     title = title.decode('utf-8')
 
     #Parse format string to generate filename:
