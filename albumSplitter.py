@@ -110,8 +110,11 @@ for song in trackdata:
     startTime = song.start // (44100 / 1000.) # Don't use actual sample rate of file because deflacue can't know it and uses 44100 to output samples
     try:
         endTime = song.end // (44100 / 1000.)
-    except TypeError:
+    except:
         endTime = None
+    
+    if endTime == 0:
+        endTime = None  # let pydub decide the length of the last track
 
     artist = gArtist
     year = gYear
@@ -120,6 +123,7 @@ for song in trackdata:
     track = '%02d' % song.num
     title = song.title.encode('utf-8')
     title = title.decode('utf-8')
+
 
     #Parse format string to generate filename:
     filename = args.string
