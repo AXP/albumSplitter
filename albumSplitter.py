@@ -12,7 +12,7 @@ version = "1.3.1"
 def yes_or_no(question):
     while "the answer is invalid":
         reply = str(input(question+' (y/n): ')).lower().strip()
-        if reply[0] == 'y':
+        if reply == '' or reply[0] == 'y':
             return True
         if reply[0] == 'n':
             return False
@@ -86,7 +86,11 @@ gAlbum = metadata['ALBUM']
 if not gAlbum or not yes_or_no("Album is: '" + gAlbum + "', is it ok?"):
     gAlbum = input("Enter album manually: ")
 
-gGenre = metadata['GENRE']
+try:
+    gGenre = metadata['GENRE']
+except:
+    gGenre = ''
+
 if not gGenre or not yes_or_no("Genre is: '" + gGenre + "', is it ok?"):
     gGenre = input("Enter genre manually: ")
 
