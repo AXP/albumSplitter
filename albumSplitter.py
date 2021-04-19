@@ -6,6 +6,7 @@ import sys
 import os
 import subprocess
 import argparse
+import re
 
 version = "1.3.1"
 
@@ -79,6 +80,13 @@ if not gArtist or not yes_or_no("Artist is: '" + gArtist + "', is it ok?"):
     gArtist = input("Enter artist manually: ")
 
 gYear = metadata['DATE']
+if not gYear: #try to guess from path name
+    match_year = re.search(r"(\d{4})", os.path.abspath(args.album))
+    if match_year:
+        gYear = match_year.group(0)
+        if args.verbose:
+            print("year is missing in cue, but found in pathname: " + gYear)
+
 if not gYear or not yes_or_no("Year is: '" + gYear + "', is it ok?"):
     gYear = input("Enter year manually: ")
 
