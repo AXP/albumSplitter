@@ -163,7 +163,7 @@ for song in trackdata:
                 parameters=['-sample_fmt', args.bitdepth, '-ar', args.samplerate],
                 tags={'artist': artist, 'album_artist': artist, 'year': year, 'album': album, 'track': track, 'title': title, 'genre': genre})
         if args.cover != None:
-            if subprocess.call(["metaflac", "--import-picture-from='" + args.cover + "'", fileName]):
+            if subprocess.call(["metaflac", "--import-picture-from='" + args.cover + "'", filename]):
                 raise BlockingIOError("Couldn't add cover")
         sys.stdout.write(" : DONE\n")
     except:
